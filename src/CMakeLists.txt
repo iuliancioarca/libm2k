@@ -67,6 +67,13 @@ target_include_directories(${PROJECT_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
+if (WIN32 OR CYGWIN)
+	message("!!!!!!!!!!!!!!! MINGW")
+	target_include_directories (${PROJECT_NAME}
+			PRIVATE
+				${GLOG_INCLUDE_DIRS}/../src)
+endif ()
+
 if (NOT WIN32)
 	find_library(PTHREAD_LIBRARIES pthread)
 	if (PTHREAD_LIBRARIES)
