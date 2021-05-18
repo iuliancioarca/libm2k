@@ -37,8 +37,8 @@ M2kAnalogIn(handle) = M2kAnalogIn(
 					"MEAS5"=>"CRMs",
                     ),					
 				1e-3,
-				1e3,
-				20e6,
+				1e4,
+				1e6,
 				nothing,
 				0
                     )
@@ -112,15 +112,15 @@ end
 ### HORIZONTAL
 function set_horizontal_scale(obj::M2kAnalogIn, value)
 	obj.hor_scale = value
-	duration = obj.hor_scale*10
-	obj.nb_samples = Int64(round(duration * obj.sampling_rate))
+	max_srate = min(100e6, round(obj.nb_samples/(10*obj.hor_scale)))
+	set_sample_rate(obj, max_srate)
 	return nothing
 end
 function get_horizontal_scale(obj::M2kAnalogIn, time)
 	obj.hor_scale
 end
 function set_sample_rate(obj::M2kAnalogIn, sr)
-	obj.hor_scale
+	setSampleRate(obj.handle, sr)
 end
 
 ### TRIGGER
@@ -214,6 +214,7 @@ end
 
 function fetch_wfm(obj::M2kAnalogIn, ch)
 	ch = obj.instr_dict[ch]
+	setKernelBuffersCount(obj.handle, 1)
 	max_srate = min(100e6, round(obj.nb_samples/(10*obj.hor_scale)))
 	dt = 1/max_srate
 
